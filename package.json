@@ -1,0 +1,24 @@
+{
+  "name": "pipeman",
+  "version": "1.0.0",
+  "description": "using these language interfaces you can implement cards for pipeman",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ondbyte/pm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ondbyte/pm/issues"
+  },
+  "homepage": "https://github.com/ondbyte/pm#readme",
+  "main": "ts/index.js",
+  "types": "ts/index.d.ts",
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.5.1"
+  }
+}
