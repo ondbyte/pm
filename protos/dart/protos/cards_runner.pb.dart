@@ -17,21 +17,81 @@ import '../google/protobuf/struct.pb.dart' as $1;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
+class Port extends $pb.GeneratedMessage {
+  factory Port({
+    $core.String? name,
+    $1.Value? type,
+  }) {
+    final $result = create();
+    if (name != null) {
+      $result.name = name;
+    }
+    if (type != null) {
+      $result.type = type;
+    }
+    return $result;
+  }
+  Port._() : super();
+  factory Port.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Port.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Port', package: const $pb.PackageName(_omitMessageNames ? '' : 'pipeman'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'name')
+    ..aOM<$1.Value>(3, _omitFieldNames ? '' : 'type', subBuilder: $1.Value.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  Port clone() => Port()..mergeFromMessage(this);
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  Port copyWith(void Function(Port) updates) => super.copyWith((message) => updates(message as Port)) as Port;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static Port create() => Port._();
+  Port createEmptyInstance() => create();
+  static $pb.PbList<Port> createRepeated() => $pb.PbList<Port>();
+  @$core.pragma('dart2js:noInline')
+  static Port getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Port>(create);
+  static Port? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => $_clearField(1);
+
+  @$pb.TagNumber(3)
+  $1.Value get type => $_getN(1);
+  @$pb.TagNumber(3)
+  set type($1.Value v) { $_setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasType() => $_has(1);
+  @$pb.TagNumber(3)
+  void clearType() => $_clearField(3);
+  @$pb.TagNumber(3)
+  $1.Value ensureType() => $_ensure(1);
+}
+
 class Card extends $pb.GeneratedMessage {
   factory Card({
     $core.String? name,
-    $1.Struct? in_2,
-    $1.Struct? out,
+    $core.Iterable<$core.MapEntry<$core.String, Port>>? in_2,
+    $core.Iterable<$core.MapEntry<$core.String, Port>>? out,
   }) {
     final $result = create();
     if (name != null) {
       $result.name = name;
     }
     if (in_2 != null) {
-      $result.in_2 = in_2;
+      $result.in_2.addEntries(in_2);
     }
     if (out != null) {
-      $result.out = out;
+      $result.out.addEntries(out);
     }
     return $result;
   }
@@ -41,8 +101,8 @@ class Card extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Card', package: const $pb.PackageName(_omitMessageNames ? '' : 'pipeman'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'name')
-    ..aOM<$1.Struct>(2, _omitFieldNames ? '' : 'in', subBuilder: $1.Struct.create)
-    ..aOM<$1.Struct>(3, _omitFieldNames ? '' : 'out', subBuilder: $1.Struct.create)
+    ..m<$core.String, Port>(2, _omitFieldNames ? '' : 'in', entryClassName: 'Card.InEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Port.create, valueDefaultOrMaker: Port.getDefault, packageName: const $pb.PackageName('pipeman'))
+    ..m<$core.String, Port>(3, _omitFieldNames ? '' : 'out', entryClassName: 'Card.OutEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Port.create, valueDefaultOrMaker: Port.getDefault, packageName: const $pb.PackageName('pipeman'))
     ..hasRequiredFields = false
   ;
 
@@ -71,26 +131,10 @@ class Card extends $pb.GeneratedMessage {
   void clearName() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $1.Struct get in_2 => $_getN(1);
-  @$pb.TagNumber(2)
-  set in_2($1.Struct v) { $_setField(2, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasIn_2() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearIn_2() => $_clearField(2);
-  @$pb.TagNumber(2)
-  $1.Struct ensureIn_2() => $_ensure(1);
+  $pb.PbMap<$core.String, Port> get in_2 => $_getMap(1);
 
   @$pb.TagNumber(3)
-  $1.Struct get out => $_getN(2);
-  @$pb.TagNumber(3)
-  set out($1.Struct v) { $_setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasOut() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearOut() => $_clearField(3);
-  @$pb.TagNumber(3)
-  $1.Struct ensureOut() => $_ensure(2);
+  $pb.PbMap<$core.String, Port> get out => $_getMap(2);
 }
 
 class Cards extends $pb.GeneratedMessage {
@@ -160,18 +204,18 @@ class EmptyReq extends $pb.GeneratedMessage {
 class CardInputWithCardName extends $pb.GeneratedMessage {
   factory CardInputWithCardName({
     $core.String? card,
-    $1.Struct? input,
-    $1.Struct? output,
+    $core.Iterable<$core.MapEntry<$core.String, Port>>? input,
+    $core.Iterable<$core.MapEntry<$core.String, Port>>? output,
   }) {
     final $result = create();
     if (card != null) {
       $result.card = card;
     }
     if (input != null) {
-      $result.input = input;
+      $result.input.addEntries(input);
     }
     if (output != null) {
-      $result.output = output;
+      $result.output.addEntries(output);
     }
     return $result;
   }
@@ -181,8 +225,8 @@ class CardInputWithCardName extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'CardInputWithCardName', package: const $pb.PackageName(_omitMessageNames ? '' : 'pipeman'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'card')
-    ..aOM<$1.Struct>(2, _omitFieldNames ? '' : 'input', subBuilder: $1.Struct.create)
-    ..aOM<$1.Struct>(3, _omitFieldNames ? '' : 'output', subBuilder: $1.Struct.create)
+    ..m<$core.String, Port>(2, _omitFieldNames ? '' : 'input', entryClassName: 'CardInputWithCardName.InputEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Port.create, valueDefaultOrMaker: Port.getDefault, packageName: const $pb.PackageName('pipeman'))
+    ..m<$core.String, Port>(3, _omitFieldNames ? '' : 'output', entryClassName: 'CardInputWithCardName.OutputEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: Port.create, valueDefaultOrMaker: Port.getDefault, packageName: const $pb.PackageName('pipeman'))
     ..hasRequiredFields = false
   ;
 
@@ -211,26 +255,10 @@ class CardInputWithCardName extends $pb.GeneratedMessage {
   void clearCard() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $1.Struct get input => $_getN(1);
-  @$pb.TagNumber(2)
-  set input($1.Struct v) { $_setField(2, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasInput() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearInput() => $_clearField(2);
-  @$pb.TagNumber(2)
-  $1.Struct ensureInput() => $_ensure(1);
+  $pb.PbMap<$core.String, Port> get input => $_getMap(1);
 
   @$pb.TagNumber(3)
-  $1.Struct get output => $_getN(2);
-  @$pb.TagNumber(3)
-  set output($1.Struct v) { $_setField(3, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasOutput() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearOutput() => $_clearField(3);
-  @$pb.TagNumber(3)
-  $1.Struct ensureOutput() => $_ensure(2);
+  $pb.PbMap<$core.String, Port> get output => $_getMap(2);
 }
 
 

@@ -22,18 +22,70 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Port struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Type          *structpb.Value        `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Port) Reset() {
+	*x = Port{}
+	mi := &file_protos_cards_runner_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Port) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Port) ProtoMessage() {}
+
+func (x *Port) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_cards_runner_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Port.ProtoReflect.Descriptor instead.
+func (*Port) Descriptor() ([]byte, []int) {
+	return file_protos_cards_runner_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Port) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Port) GetType() *structpb.Value {
+	if x != nil {
+		return x.Type
+	}
+	return nil
+}
+
 type Card struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	In            *structpb.Struct       `protobuf:"bytes,2,opt,name=in,proto3" json:"in,omitempty"`
-	Out           *structpb.Struct       `protobuf:"bytes,3,opt,name=out,proto3" json:"out,omitempty"`
+	In            map[string]*Port       `protobuf:"bytes,2,rep,name=in,proto3" json:"in,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Out           map[string]*Port       `protobuf:"bytes,3,rep,name=out,proto3" json:"out,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Card) Reset() {
 	*x = Card{}
-	mi := &file_protos_cards_runner_proto_msgTypes[0]
+	mi := &file_protos_cards_runner_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +97,7 @@ func (x *Card) String() string {
 func (*Card) ProtoMessage() {}
 
 func (x *Card) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_cards_runner_proto_msgTypes[0]
+	mi := &file_protos_cards_runner_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +110,7 @@ func (x *Card) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Card.ProtoReflect.Descriptor instead.
 func (*Card) Descriptor() ([]byte, []int) {
-	return file_protos_cards_runner_proto_rawDescGZIP(), []int{0}
+	return file_protos_cards_runner_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Card) GetName() string {
@@ -68,14 +120,14 @@ func (x *Card) GetName() string {
 	return ""
 }
 
-func (x *Card) GetIn() *structpb.Struct {
+func (x *Card) GetIn() map[string]*Port {
 	if x != nil {
 		return x.In
 	}
 	return nil
 }
 
-func (x *Card) GetOut() *structpb.Struct {
+func (x *Card) GetOut() map[string]*Port {
 	if x != nil {
 		return x.Out
 	}
@@ -91,7 +143,7 @@ type Cards struct {
 
 func (x *Cards) Reset() {
 	*x = Cards{}
-	mi := &file_protos_cards_runner_proto_msgTypes[1]
+	mi := &file_protos_cards_runner_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -103,7 +155,7 @@ func (x *Cards) String() string {
 func (*Cards) ProtoMessage() {}
 
 func (x *Cards) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_cards_runner_proto_msgTypes[1]
+	mi := &file_protos_cards_runner_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -116,7 +168,7 @@ func (x *Cards) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cards.ProtoReflect.Descriptor instead.
 func (*Cards) Descriptor() ([]byte, []int) {
-	return file_protos_cards_runner_proto_rawDescGZIP(), []int{1}
+	return file_protos_cards_runner_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Cards) GetCards() []*Card {
@@ -134,7 +186,7 @@ type EmptyReq struct {
 
 func (x *EmptyReq) Reset() {
 	*x = EmptyReq{}
-	mi := &file_protos_cards_runner_proto_msgTypes[2]
+	mi := &file_protos_cards_runner_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +198,7 @@ func (x *EmptyReq) String() string {
 func (*EmptyReq) ProtoMessage() {}
 
 func (x *EmptyReq) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_cards_runner_proto_msgTypes[2]
+	mi := &file_protos_cards_runner_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,21 +211,21 @@ func (x *EmptyReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmptyReq.ProtoReflect.Descriptor instead.
 func (*EmptyReq) Descriptor() ([]byte, []int) {
-	return file_protos_cards_runner_proto_rawDescGZIP(), []int{2}
+	return file_protos_cards_runner_proto_rawDescGZIP(), []int{3}
 }
 
 type CardInputWithCardName struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Card          string                 `protobuf:"bytes,1,opt,name=card,proto3" json:"card,omitempty"`
-	Input         *structpb.Struct       `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
-	Output        *structpb.Struct       `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
+	Input         map[string]*Port       `protobuf:"bytes,2,rep,name=input,proto3" json:"input,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Output        map[string]*Port       `protobuf:"bytes,3,rep,name=output,proto3" json:"output,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CardInputWithCardName) Reset() {
 	*x = CardInputWithCardName{}
-	mi := &file_protos_cards_runner_proto_msgTypes[3]
+	mi := &file_protos_cards_runner_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +237,7 @@ func (x *CardInputWithCardName) String() string {
 func (*CardInputWithCardName) ProtoMessage() {}
 
 func (x *CardInputWithCardName) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_cards_runner_proto_msgTypes[3]
+	mi := &file_protos_cards_runner_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +250,7 @@ func (x *CardInputWithCardName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardInputWithCardName.ProtoReflect.Descriptor instead.
 func (*CardInputWithCardName) Descriptor() ([]byte, []int) {
-	return file_protos_cards_runner_proto_rawDescGZIP(), []int{3}
+	return file_protos_cards_runner_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CardInputWithCardName) GetCard() string {
@@ -208,14 +260,14 @@ func (x *CardInputWithCardName) GetCard() string {
 	return ""
 }
 
-func (x *CardInputWithCardName) GetInput() *structpb.Struct {
+func (x *CardInputWithCardName) GetInput() map[string]*Port {
 	if x != nil {
 		return x.Input
 	}
 	return nil
 }
 
-func (x *CardInputWithCardName) GetOutput() *structpb.Struct {
+func (x *CardInputWithCardName) GetOutput() map[string]*Port {
 	if x != nil {
 		return x.Output
 	}
@@ -226,19 +278,35 @@ var File_protos_cards_runner_proto protoreflect.FileDescriptor
 
 const file_protos_cards_runner_proto_rawDesc = "" +
 	"\n" +
-	"\x19protos/cards_runner.proto\x12\apipeman\x1a\x1cgoogle/protobuf/struct.proto\"n\n" +
+	"\x19protos/cards_runner.proto\x12\apipeman\x1a\x1cgoogle/protobuf/struct.proto\"F\n" +
+	"\x04Port\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12*\n" +
+	"\x04type\x18\x03 \x01(\v2\x16.google.protobuf.ValueR\x04type\"\xf8\x01\n" +
 	"\x04Card\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
-	"\x02in\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x02in\x12)\n" +
-	"\x03out\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x03out\",\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\x02in\x18\x02 \x03(\v2\x15.pipeman.Card.InEntryR\x02in\x12(\n" +
+	"\x03out\x18\x03 \x03(\v2\x16.pipeman.Card.OutEntryR\x03out\x1aD\n" +
+	"\aInEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12#\n" +
+	"\x05value\x18\x02 \x01(\v2\r.pipeman.PortR\x05value:\x028\x01\x1aE\n" +
+	"\bOutEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12#\n" +
+	"\x05value\x18\x02 \x01(\v2\r.pipeman.PortR\x05value:\x028\x01\",\n" +
 	"\x05Cards\x12#\n" +
 	"\x05cards\x18\x01 \x03(\v2\r.pipeman.CardR\x05cards\"\n" +
 	"\n" +
-	"\bEmptyReq\"\x8b\x01\n" +
+	"\bEmptyReq\"\xc3\x02\n" +
 	"\x15CardInputWithCardName\x12\x12\n" +
-	"\x04card\x18\x01 \x01(\tR\x04card\x12-\n" +
-	"\x05input\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x05input\x12/\n" +
-	"\x06output\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x06output2\x89\x01\n" +
+	"\x04card\x18\x01 \x01(\tR\x04card\x12?\n" +
+	"\x05input\x18\x02 \x03(\v2).pipeman.CardInputWithCardName.InputEntryR\x05input\x12B\n" +
+	"\x06output\x18\x03 \x03(\v2*.pipeman.CardInputWithCardName.OutputEntryR\x06output\x1aG\n" +
+	"\n" +
+	"InputEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12#\n" +
+	"\x05value\x18\x02 \x01(\v2\r.pipeman.PortR\x05value:\x028\x01\x1aH\n" +
+	"\vOutputEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12#\n" +
+	"\x05value\x18\x02 \x01(\v2\r.pipeman.PortR\x05value:\x028\x012\x89\x01\n" +
 	"\vCardsRunner\x126\n" +
 	"\x11GetSupportedCards\x12\x11.pipeman.EmptyReq\x1a\x0e.pipeman.Cards\x12B\n" +
 	"\aRunCard\x12\x1e.pipeman.CardInputWithCardName\x1a\x17.google.protobuf.StructB(Z&github.com/ondbyte/pm/protos/go/protosb\x06proto3"
@@ -255,29 +323,40 @@ func file_protos_cards_runner_proto_rawDescGZIP() []byte {
 	return file_protos_cards_runner_proto_rawDescData
 }
 
-var file_protos_cards_runner_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_protos_cards_runner_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_protos_cards_runner_proto_goTypes = []any{
-	(*Card)(nil),                  // 0: pipeman.Card
-	(*Cards)(nil),                 // 1: pipeman.Cards
-	(*EmptyReq)(nil),              // 2: pipeman.EmptyReq
-	(*CardInputWithCardName)(nil), // 3: pipeman.CardInputWithCardName
-	(*structpb.Struct)(nil),       // 4: google.protobuf.Struct
+	(*Port)(nil),                  // 0: pipeman.Port
+	(*Card)(nil),                  // 1: pipeman.Card
+	(*Cards)(nil),                 // 2: pipeman.Cards
+	(*EmptyReq)(nil),              // 3: pipeman.EmptyReq
+	(*CardInputWithCardName)(nil), // 4: pipeman.CardInputWithCardName
+	nil,                           // 5: pipeman.Card.InEntry
+	nil,                           // 6: pipeman.Card.OutEntry
+	nil,                           // 7: pipeman.CardInputWithCardName.InputEntry
+	nil,                           // 8: pipeman.CardInputWithCardName.OutputEntry
+	(*structpb.Value)(nil),        // 9: google.protobuf.Value
+	(*structpb.Struct)(nil),       // 10: google.protobuf.Struct
 }
 var file_protos_cards_runner_proto_depIdxs = []int32{
-	4, // 0: pipeman.Card.in:type_name -> google.protobuf.Struct
-	4, // 1: pipeman.Card.out:type_name -> google.protobuf.Struct
-	0, // 2: pipeman.Cards.cards:type_name -> pipeman.Card
-	4, // 3: pipeman.CardInputWithCardName.input:type_name -> google.protobuf.Struct
-	4, // 4: pipeman.CardInputWithCardName.output:type_name -> google.protobuf.Struct
-	2, // 5: pipeman.CardsRunner.GetSupportedCards:input_type -> pipeman.EmptyReq
-	3, // 6: pipeman.CardsRunner.RunCard:input_type -> pipeman.CardInputWithCardName
-	1, // 7: pipeman.CardsRunner.GetSupportedCards:output_type -> pipeman.Cards
-	4, // 8: pipeman.CardsRunner.RunCard:output_type -> google.protobuf.Struct
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	9,  // 0: pipeman.Port.type:type_name -> google.protobuf.Value
+	5,  // 1: pipeman.Card.in:type_name -> pipeman.Card.InEntry
+	6,  // 2: pipeman.Card.out:type_name -> pipeman.Card.OutEntry
+	1,  // 3: pipeman.Cards.cards:type_name -> pipeman.Card
+	7,  // 4: pipeman.CardInputWithCardName.input:type_name -> pipeman.CardInputWithCardName.InputEntry
+	8,  // 5: pipeman.CardInputWithCardName.output:type_name -> pipeman.CardInputWithCardName.OutputEntry
+	0,  // 6: pipeman.Card.InEntry.value:type_name -> pipeman.Port
+	0,  // 7: pipeman.Card.OutEntry.value:type_name -> pipeman.Port
+	0,  // 8: pipeman.CardInputWithCardName.InputEntry.value:type_name -> pipeman.Port
+	0,  // 9: pipeman.CardInputWithCardName.OutputEntry.value:type_name -> pipeman.Port
+	3,  // 10: pipeman.CardsRunner.GetSupportedCards:input_type -> pipeman.EmptyReq
+	4,  // 11: pipeman.CardsRunner.RunCard:input_type -> pipeman.CardInputWithCardName
+	2,  // 12: pipeman.CardsRunner.GetSupportedCards:output_type -> pipeman.Cards
+	10, // 13: pipeman.CardsRunner.RunCard:output_type -> google.protobuf.Struct
+	12, // [12:14] is the sub-list for method output_type
+	10, // [10:12] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_protos_cards_runner_proto_init() }
@@ -291,7 +370,7 @@ func file_protos_cards_runner_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_cards_runner_proto_rawDesc), len(file_protos_cards_runner_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

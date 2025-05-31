@@ -18,20 +18,20 @@ func Gen_protos() error {
 	if exec.Command("buf").Run() != nil {
 		switch runtime.GOOS {
 		case "windows":
-			if err := exec.Command("scoop", "install", "buf").Run(); err != nil {
-				return fmt.Errorf("err while installing buf: %v", err)
+			if bs, err := exec.Command("scoop", "install", "buf").CombinedOutput(); err != nil {
+				return fmt.Errorf("err while installing buf: %v\n%v", err, string(bs))
 			}
 		case "linux", "darwin":
-			if err := exec.Command("brew", "install", "bufbuild/buf/buf"); err != nil {
-				return fmt.Errorf("err while installing buf: %v", err)
+			if bs, err := exec.Command("brew", "install", "bufbuild/buf/buf").CombinedOutput(); err != nil {
+				return fmt.Errorf("err while installing buf: %v\n%v", err, string(bs))
 			}
 		default:
 			return fmt.Errorf("unsupported os: %v", runtime.GOOS)
 		}
 	}
 	// buf generate --template buf.gen.json
-	if err := exec.Command("buf", "generate").Run(); err != nil {
-		return fmt.Errorf("err while buf generate: %v", err)
+	if bs, err := exec.Command("buf", "generate").CombinedOutput(); err != nil {
+		return fmt.Errorf("err while buf generate: %v\n%v", err, string(bs))
 	}
 	return nil
 }

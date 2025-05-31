@@ -6,14 +6,29 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Struct } from "../google/protobuf/struct";
+import { Struct, Value } from "../google/protobuf/struct";
 
 export const protobufPackage = "pipeman";
 
+export interface Port {
+  name: string;
+  type: any | undefined;
+}
+
 export interface Card {
   name: string;
-  in: { [key: string]: any } | undefined;
-  out: { [key: string]: any } | undefined;
+  in: { [key: string]: Port };
+  out: { [key: string]: Port };
+}
+
+export interface Card_InEntry {
+  key: string;
+  value: Port | undefined;
+}
+
+export interface Card_OutEntry {
+  key: string;
+  value: Port | undefined;
 }
 
 export interface Cards {
@@ -25,12 +40,98 @@ export interface EmptyReq {
 
 export interface CardInputWithCardName {
   card: string;
-  input: { [key: string]: any } | undefined;
-  output: { [key: string]: any } | undefined;
+  input: { [key: string]: Port };
+  output: { [key: string]: Port };
 }
 
+export interface CardInputWithCardName_InputEntry {
+  key: string;
+  value: Port | undefined;
+}
+
+export interface CardInputWithCardName_OutputEntry {
+  key: string;
+  value: Port | undefined;
+}
+
+function createBasePort(): Port {
+  return { name: "", type: undefined };
+}
+
+export const Port: MessageFns<Port> = {
+  encode(message: Port, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.type !== undefined) {
+      Value.encode(Value.wrap(message.type), writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Port {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePort();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.type = Value.unwrap(Value.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Port {
+    return {
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      type: isSet(object?.type) ? object.type : undefined,
+    };
+  },
+
+  toJSON(message: Port): unknown {
+    const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.type !== undefined) {
+      obj.type = message.type;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Port>, I>>(base?: I): Port {
+    return Port.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Port>, I>>(object: I): Port {
+    const message = createBasePort();
+    message.name = object.name ?? "";
+    message.type = object.type ?? undefined;
+    return message;
+  },
+};
+
 function createBaseCard(): Card {
-  return { name: "", in: undefined, out: undefined };
+  return { name: "", in: {}, out: {} };
 }
 
 export const Card: MessageFns<Card> = {
@@ -38,12 +139,12 @@ export const Card: MessageFns<Card> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.in !== undefined) {
-      Struct.encode(Struct.wrap(message.in), writer.uint32(18).fork()).join();
-    }
-    if (message.out !== undefined) {
-      Struct.encode(Struct.wrap(message.out), writer.uint32(26).fork()).join();
-    }
+    Object.entries(message.in).forEach(([key, value]) => {
+      Card_InEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).join();
+    });
+    Object.entries(message.out).forEach(([key, value]) => {
+      Card_OutEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).join();
+    });
     return writer;
   },
 
@@ -67,7 +168,10 @@ export const Card: MessageFns<Card> = {
             break;
           }
 
-          message.in = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          const entry2 = Card_InEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.in[entry2.key] = entry2.value;
+          }
           continue;
         }
         case 3: {
@@ -75,7 +179,10 @@ export const Card: MessageFns<Card> = {
             break;
           }
 
-          message.out = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          const entry3 = Card_OutEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.out[entry3.key] = entry3.value;
+          }
           continue;
         }
       }
@@ -90,8 +197,18 @@ export const Card: MessageFns<Card> = {
   fromJSON(object: any): Card {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      in: isObject(object.in) ? object.in : undefined,
-      out: isObject(object.out) ? object.out : undefined,
+      in: isObject(object.in)
+        ? Object.entries(object.in).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+          acc[key] = Port.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
+      out: isObject(object.out)
+        ? Object.entries(object.out).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+          acc[key] = Port.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
     };
   },
 
@@ -100,11 +217,23 @@ export const Card: MessageFns<Card> = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.in !== undefined) {
-      obj.in = message.in;
+    if (message.in) {
+      const entries = Object.entries(message.in);
+      if (entries.length > 0) {
+        obj.in = {};
+        entries.forEach(([k, v]) => {
+          obj.in[k] = Port.toJSON(v);
+        });
+      }
     }
-    if (message.out !== undefined) {
-      obj.out = message.out;
+    if (message.out) {
+      const entries = Object.entries(message.out);
+      if (entries.length > 0) {
+        obj.out = {};
+        entries.forEach(([k, v]) => {
+          obj.out[k] = Port.toJSON(v);
+        });
+      }
     }
     return obj;
   },
@@ -115,8 +244,170 @@ export const Card: MessageFns<Card> = {
   fromPartial<I extends Exact<DeepPartial<Card>, I>>(object: I): Card {
     const message = createBaseCard();
     message.name = object.name ?? "";
-    message.in = object.in ?? undefined;
-    message.out = object.out ?? undefined;
+    message.in = Object.entries(object.in ?? {}).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = Port.fromPartial(value);
+      }
+      return acc;
+    }, {});
+    message.out = Object.entries(object.out ?? {}).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = Port.fromPartial(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseCard_InEntry(): Card_InEntry {
+  return { key: "", value: undefined };
+}
+
+export const Card_InEntry: MessageFns<Card_InEntry> = {
+  encode(message: Card_InEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Port.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Card_InEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCard_InEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = Port.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Card_InEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? Port.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: Card_InEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = Port.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Card_InEntry>, I>>(base?: I): Card_InEntry {
+    return Card_InEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Card_InEntry>, I>>(object: I): Card_InEntry {
+    const message = createBaseCard_InEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null) ? Port.fromPartial(object.value) : undefined;
+    return message;
+  },
+};
+
+function createBaseCard_OutEntry(): Card_OutEntry {
+  return { key: "", value: undefined };
+}
+
+export const Card_OutEntry: MessageFns<Card_OutEntry> = {
+  encode(message: Card_OutEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Port.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Card_OutEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCard_OutEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = Port.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Card_OutEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? Port.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: Card_OutEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = Port.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Card_OutEntry>, I>>(base?: I): Card_OutEntry {
+    return Card_OutEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Card_OutEntry>, I>>(object: I): Card_OutEntry {
+    const message = createBaseCard_OutEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null) ? Port.fromPartial(object.value) : undefined;
     return message;
   },
 };
@@ -223,7 +514,7 @@ export const EmptyReq: MessageFns<EmptyReq> = {
 };
 
 function createBaseCardInputWithCardName(): CardInputWithCardName {
-  return { card: "", input: undefined, output: undefined };
+  return { card: "", input: {}, output: {} };
 }
 
 export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
@@ -231,12 +522,12 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
     if (message.card !== "") {
       writer.uint32(10).string(message.card);
     }
-    if (message.input !== undefined) {
-      Struct.encode(Struct.wrap(message.input), writer.uint32(18).fork()).join();
-    }
-    if (message.output !== undefined) {
-      Struct.encode(Struct.wrap(message.output), writer.uint32(26).fork()).join();
-    }
+    Object.entries(message.input).forEach(([key, value]) => {
+      CardInputWithCardName_InputEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).join();
+    });
+    Object.entries(message.output).forEach(([key, value]) => {
+      CardInputWithCardName_OutputEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).join();
+    });
     return writer;
   },
 
@@ -260,7 +551,10 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
             break;
           }
 
-          message.input = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          const entry2 = CardInputWithCardName_InputEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.input[entry2.key] = entry2.value;
+          }
           continue;
         }
         case 3: {
@@ -268,7 +562,10 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
             break;
           }
 
-          message.output = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          const entry3 = CardInputWithCardName_OutputEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.output[entry3.key] = entry3.value;
+          }
           continue;
         }
       }
@@ -283,8 +580,18 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
   fromJSON(object: any): CardInputWithCardName {
     return {
       card: isSet(object.card) ? globalThis.String(object.card) : "",
-      input: isObject(object.input) ? object.input : undefined,
-      output: isObject(object.output) ? object.output : undefined,
+      input: isObject(object.input)
+        ? Object.entries(object.input).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+          acc[key] = Port.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
+      output: isObject(object.output)
+        ? Object.entries(object.output).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+          acc[key] = Port.fromJSON(value);
+          return acc;
+        }, {})
+        : {},
     };
   },
 
@@ -293,11 +600,23 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
     if (message.card !== "") {
       obj.card = message.card;
     }
-    if (message.input !== undefined) {
-      obj.input = message.input;
+    if (message.input) {
+      const entries = Object.entries(message.input);
+      if (entries.length > 0) {
+        obj.input = {};
+        entries.forEach(([k, v]) => {
+          obj.input[k] = Port.toJSON(v);
+        });
+      }
     }
-    if (message.output !== undefined) {
-      obj.output = message.output;
+    if (message.output) {
+      const entries = Object.entries(message.output);
+      if (entries.length > 0) {
+        obj.output = {};
+        entries.forEach(([k, v]) => {
+          obj.output[k] = Port.toJSON(v);
+        });
+      }
     }
     return obj;
   },
@@ -308,8 +627,178 @@ export const CardInputWithCardName: MessageFns<CardInputWithCardName> = {
   fromPartial<I extends Exact<DeepPartial<CardInputWithCardName>, I>>(object: I): CardInputWithCardName {
     const message = createBaseCardInputWithCardName();
     message.card = object.card ?? "";
-    message.input = object.input ?? undefined;
-    message.output = object.output ?? undefined;
+    message.input = Object.entries(object.input ?? {}).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = Port.fromPartial(value);
+      }
+      return acc;
+    }, {});
+    message.output = Object.entries(object.output ?? {}).reduce<{ [key: string]: Port }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = Port.fromPartial(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseCardInputWithCardName_InputEntry(): CardInputWithCardName_InputEntry {
+  return { key: "", value: undefined };
+}
+
+export const CardInputWithCardName_InputEntry: MessageFns<CardInputWithCardName_InputEntry> = {
+  encode(message: CardInputWithCardName_InputEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Port.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CardInputWithCardName_InputEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCardInputWithCardName_InputEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = Port.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CardInputWithCardName_InputEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? Port.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: CardInputWithCardName_InputEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = Port.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CardInputWithCardName_InputEntry>, I>>(
+    base?: I,
+  ): CardInputWithCardName_InputEntry {
+    return CardInputWithCardName_InputEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CardInputWithCardName_InputEntry>, I>>(
+    object: I,
+  ): CardInputWithCardName_InputEntry {
+    const message = createBaseCardInputWithCardName_InputEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null) ? Port.fromPartial(object.value) : undefined;
+    return message;
+  },
+};
+
+function createBaseCardInputWithCardName_OutputEntry(): CardInputWithCardName_OutputEntry {
+  return { key: "", value: undefined };
+}
+
+export const CardInputWithCardName_OutputEntry: MessageFns<CardInputWithCardName_OutputEntry> = {
+  encode(message: CardInputWithCardName_OutputEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Port.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CardInputWithCardName_OutputEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCardInputWithCardName_OutputEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = Port.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CardInputWithCardName_OutputEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? Port.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: CardInputWithCardName_OutputEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = Port.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CardInputWithCardName_OutputEntry>, I>>(
+    base?: I,
+  ): CardInputWithCardName_OutputEntry {
+    return CardInputWithCardName_OutputEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CardInputWithCardName_OutputEntry>, I>>(
+    object: I,
+  ): CardInputWithCardName_OutputEntry {
+    const message = createBaseCardInputWithCardName_OutputEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null) ? Port.fromPartial(object.value) : undefined;
     return message;
   },
 };
